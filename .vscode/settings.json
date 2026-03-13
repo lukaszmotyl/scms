@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "*.yml": "yaml",
+    "*.yaml": "yaml"
+  }
+}
+

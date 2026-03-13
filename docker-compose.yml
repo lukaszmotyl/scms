@@ -1,0 +1,80 @@
+services:
+  php-fpm:
+    build:
+      context: .
+      dockerfile: .docker/php-fpm/Dockerfile
+    volumes:
+      - ./:/var/www/html:cached
+      - php_socket:/var/run/php
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: "postgresql://scms:scms@postgres:5432/scms?serverVersion=16&charset=utf8"
+      REDIS_DSN: "redis://redis:6379"
+      MESSENGER_TRANSPORT_DSN: "amqp://guest:guest@rabbitmq:5672/%2f/messages"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+
+  worker:
+    build:
+      context: .
+      dockerfile: .docker/worker/Dockerfile
+    volumes:
+      - ./:/var/www/html:cached
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: "postgresql://scms:scms@postgres:5432/scms?serverVersion=16&charset=utf8"
+      REDIS_DSN: "redis://redis:6379"
+      MESSENGER_TRANSPORT_DSN: "amqp://guest:guest@rabbitmq:5672/%2f/messages"
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+
+  nginx:
+    build:
+      context: .
+      dockerfile: .docker/nginx/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html:cached
+      - php_socket:/var/run/php
+    depends_on:
+      - php-fpm
+
+  postgres:
+    build:
+      context: .
+      dockerfile: .docker/postgresql/Dockerfile
+    environment:
+      POSTGRES_DB: scms
+      POSTGRES_USER: scms
+      POSTGRES_PASSWORD: scms
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    build:
+      context: .
+      dockerfile: .docker/redis/Dockerfile
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    build:
+      context: .
+      dockerfile: .docker/rabbitmq/Dockerfile
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+volumes:
+  postgres_data:
+  php_socket:
