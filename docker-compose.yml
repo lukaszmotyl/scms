@@ -15,6 +15,8 @@ services:
       - postgres
       - redis
       - rabbitmq
+    networks:
+      - default
 
   worker:
     build:
@@ -31,6 +33,8 @@ services:
       - postgres
       - redis
       - rabbitmq
+    networks:
+      - default
 
   nginx:
     build:
@@ -43,6 +47,8 @@ services:
       - php_socket:/var/run/php
     depends_on:
       - php-fpm
+    networks:
+      - default
 
   postgres:
     build:
@@ -52,10 +58,13 @@ services:
       POSTGRES_DB: scms
       POSTGRES_USER: scms
       POSTGRES_PASSWORD: scms
+      POSTGRES_HOST_AUTH_METHOD: md5
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - default
 
   redis:
     build:
@@ -63,6 +72,8 @@ services:
       dockerfile: .docker/redis/Dockerfile
     ports:
       - "6379:6379"
+    networks:
+      - default
 
   rabbitmq:
     build:
@@ -74,7 +85,13 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - default
 
 volumes:
   postgres_data:
   php_socket:
+
+networks:
+  default:
+    driver: bridge

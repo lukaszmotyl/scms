@@ -21,4 +21,4 @@ COPY .docker/worker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["php", "bin/console", "messenger:consume", "async", "--time-limit=0", "--memory-limit=256M", "-vv"]
+CMD ["php", "bin/console", "messenger:consume", "async", "--memory-limit=256M", "-vv"]

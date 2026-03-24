@@ -2,6 +2,19 @@
   "files.associations": {
     "*.yml": "yaml",
     "*.yaml": "yaml"
-  }
+  },
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5433,
+      "driver": "PostgreSQL",
+      "name": "local",
+      "database": "scms",
+      "username": "scms",
+      "password": "scms"
+    }
+  ]
 }
 
