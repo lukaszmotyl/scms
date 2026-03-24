@@ -16,6 +16,10 @@ RUN apk add --no-cache \
   && docker-php-ext-enable redis amqp opcache \
   && apk del --no-cache $PHPIZE_DEPS
 
+# Change www-data user and group to match local user (UID/GID 1000)
+RUN sed -i 's/^www-data:x:[0-9]\+:[0-9]\+:/www-data:x:1000:1000:/' /etc/passwd && \
+    sed -i 's/^www-data:x:[0-9]\+:/www-data:x:1000:/' /etc/group
+
 COPY --from=composer:2.7 /usr/bin/composer /usr/local/bin/composer
 
 COPY .docker/php-fpm/php.ini /usr/local/etc/php/conf.d/zz-scms.ini
